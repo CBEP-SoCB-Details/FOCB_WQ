@@ -57,25 +57,32 @@ historical record.
 
 ``` r
 library(tidyverse)
-#> -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
-#> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.0.5     v dplyr   1.0.3
-#> v tidyr   1.1.2     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.0
+#> Warning: package 'tidyverse' was built under R version 4.0.5
+#> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
+#> v ggplot2 3.3.5     v purrr   0.3.4
+#> v tibble  3.1.6     v dplyr   1.0.7
+#> v tidyr   1.1.4     v stringr 1.4.0
+#> v readr   2.1.0     v forcats 0.5.1
+#> Warning: package 'ggplot2' was built under R version 4.0.5
+#> Warning: package 'tidyr' was built under R version 4.0.5
+#> Warning: package 'dplyr' was built under R version 4.0.5
+#> Warning: package 'forcats' was built under R version 4.0.5
 #> -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(readxl)
 
 library(mgcv)     # For `gam()` and `gamm()` models
+#> Warning: package 'mgcv' was built under R version 4.0.5
 #> Loading required package: nlme
 #> 
 #> Attaching package: 'nlme'
 #> The following object is masked from 'package:dplyr':
 #> 
 #>     collapse
-#> This is mgcv 1.8-33. For overview type 'help("mgcv-package")'.
+#> This is mgcv 1.8-38. For overview type 'help("mgcv-package")'.
 library(emmeans)
+#> Warning: package 'emmeans' was built under R version 4.0.5
 
 library(CBEPgraphics)
 load_cbep_fonts()
@@ -188,9 +195,8 @@ the_data <- the_data %>%
          bottom_flag = secchi == "BSV") %>%
   relocate(secchi_2, .after = secchi) %>%
   relocate(bottom_flag, .after = secchi_2)
-#> Warning: Problem with `mutate()` input `secchi_2`.
-#> i NAs introduced by coercion
-#> i Input `secchi_2` is `if_else(secchi == "BSV", water_depth, as.numeric(secchi))`.
+#> Warning in replace_with(out, !condition, false, fmt_args(~false), glue("length
+#> of {fmt_args(~condition)}")): NAs introduced by coercion
 ```
 
 ## Transform Secchi and Chlorophyll Data
@@ -210,9 +216,7 @@ the_data <- the_data %>%
                            NA_real_, log_chl)) %>%
   relocate(sqrt_secchi, .after = secchi_2) %>%
   relocate(log_chl, log1_chl, .after = chl)
-#> Warning: Problem with `mutate()` input `log_chl`.
-#> i NaNs produced
-#> i Input `log_chl` is `log(chl)`.
+#> Warning in log(chl): NaNs produced
 ```
 
 # Recent Conditions
@@ -452,7 +456,7 @@ plus one transformed chlorophyll data.
 
 # Options for More Complex Models
 
-We could in principal adjust models for different sampling histories
+We could in principle adjust models for different sampling histories
 (years and months) but there is likely little value to doing so as the
 sampling histories are fairly uniform, with the exception of a few sites
 added recently.
@@ -873,19 +877,9 @@ local conditions in the Bay. If that is the case, we should be able to
 see high correlation with Temperature for the other parameters,
 especially after accounting for other known covariates.
 
-We take three approaches to check for the importance of temperature as a
-predictor of other water quality parameters:
-
-1.  We examine whether temperature is a significant predictor of other
-    parameters in linear models where we treat station and year as
-    random factors
-
-2.  
-
-We need to regenerate the long-form data, retaining temperature asa
-predictor variable, not breaking it into a separate dataframe.
-
-We create long-form data to facilitate faceted graphics.
+We create long-form data to facilitate faceted graphics. We need to
+regenerate the long-form data, retaining temperature as a predictor
+variable, not breaking it into a separate data frame.
 
 ``` r
  nested_data_2 <- recent_data %>%

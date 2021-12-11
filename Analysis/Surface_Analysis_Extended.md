@@ -57,10 +57,11 @@ Secchi Depth is behaving differently inshore versus offshore.
 library(tidyverse)
 #> Warning: package 'tidyverse' was built under R version 4.0.5
 #> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
-#> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.1.2     v dplyr   1.0.6
-#> v tidyr   1.1.3     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.1
+#> v ggplot2 3.3.5     v purrr   0.3.4
+#> v tibble  3.1.6     v dplyr   1.0.7
+#> v tidyr   1.1.4     v stringr 1.4.0
+#> v readr   2.1.0     v forcats 0.5.1
+#> Warning: package 'ggplot2' was built under R version 4.0.5
 #> Warning: package 'tidyr' was built under R version 4.0.5
 #> Warning: package 'dplyr' was built under R version 4.0.5
 #> Warning: package 'forcats' was built under R version 4.0.5
@@ -70,14 +71,16 @@ library(tidyverse)
 library(readxl)
 
 library(mgcv)     # For `gam()` and `gamm()` models
+#> Warning: package 'mgcv' was built under R version 4.0.5
 #> Loading required package: nlme
 #> 
 #> Attaching package: 'nlme'
 #> The following object is masked from 'package:dplyr':
 #> 
 #>     collapse
-#> This is mgcv 1.8-36. For overview type 'help("mgcv-package")'.
+#> This is mgcv 1.8-38. For overview type 'help("mgcv-package")'.
 library(emmeans)
+#> Warning: package 'emmeans' was built under R version 4.0.5
 
 library(CBEPgraphics)
 load_cbep_fonts()
@@ -271,7 +274,7 @@ years.
 
 There are several modeling strategies possible here, including quadratic
 models, piecewise linear models, or GAM models. WE focus initially on
-quatratic models and gam models, always in a hierarchical model context.
+quadratic models and gam models, always in a hierarchical model context.
 These hierarchical models treat stations as random factors. We explore
 both models that also treat Years as random factors and models that do
 not.
@@ -361,9 +364,9 @@ chose not to further explore that term via analysis of AIC, ecause tere
 are other questions of model form that may hav a larger impact on
 results.
 
-First, lets drop the idea that year to year variation is in part random.
-This has the effect of treating each observation as independent, rather
-than assuming that measurements collected within one year are
+First, let’s drop the idea that year to year variation is in part
+random. This has the effect of treating each observation as independent,
+rather than assuming that measurements collected within one year are
 correlated.
 
 ``` r
@@ -699,7 +702,8 @@ ggplot(trend_data, aes(dt, salinity)) +
 ```
 
 <img src="Surface_Analysis_Extended_files/figure-gfm/unnamed-chunk-17-1.png" style="display: block; margin: auto;" />
-So, I see no evidence that statistical summaries – even the 90th
+
+So, we see no evidence that statistical summaries – even the 90th
 percentile – show a change in the last few years. This tends to support
 the idea that the visually obvious change in outliers reflects better
 data quality, not anything going on in the ocean.
@@ -724,17 +728,14 @@ sibling  <- file.path(parent,sibfldnm)
 ``` r
 fn = 'combined_locations.csv'
 locations <- read_csv(file.path(sibling, fn))
-#> 
+#> Rows: 63 Columns: 7
 #> -- Column specification --------------------------------------------------------
-#> cols(
-#>   site = col_character(),
-#>   site_name = col_character(),
-#>   short_name = col_character(),
-#>   latitude = col_double(),
-#>   longitude = col_double(),
-#>   source = col_character(),
-#>   region = col_character()
-#> )
+#> Delimiter: ","
+#> chr (5): site, site_name, short_name, source, region
+#> dbl (2): latitude, longitude
+#> 
+#> i Use `spec()` to retrieve the full column specification for this data.
+#> i Specify the column types or set `show_col_types = FALSE` to quiet this message.
 ```
 
 ``` r

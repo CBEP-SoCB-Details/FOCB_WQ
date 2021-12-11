@@ -33,10 +33,11 @@ Curtis C. Bohlen, Casco Bay Estuary Partnership
 library(tidyverse)
 #> Warning: package 'tidyverse' was built under R version 4.0.5
 #> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
-#> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.1.2     v dplyr   1.0.6
-#> v tidyr   1.1.3     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.1
+#> v ggplot2 3.3.5     v purrr   0.3.4
+#> v tibble  3.1.6     v dplyr   1.0.7
+#> v tidyr   1.1.4     v stringr 1.4.0
+#> v readr   2.1.0     v forcats 0.5.1
+#> Warning: package 'ggplot2' was built under R version 4.0.5
 #> Warning: package 'tidyr' was built under R version 4.0.5
 #> Warning: package 'dplyr' was built under R version 4.0.5
 #> Warning: package 'forcats' was built under R version 4.0.5
@@ -99,12 +100,12 @@ ggplot(aes(Time, row)) + geom_point()
 
 <img src="FOCB-Continuous-Time-and-Tide_files/figure-gfm/unnamed-chunk-2-1.png" style="display: block; margin: auto;" />
 
-Some Times are bare times, with the Excel default “Year zero” in the
+Some times are bare times, with the Excel default “Year zero” in the
 early 1900s. Others are complete dates and times.
 
 ## Add Manually Created Times
 
-We Create two Date Time values from the Month, Year, Day and Hour
+We create two Date Time values from the Month, Year, Day and Hour
 Columns, with different assumptions about timezone. We compare them to
 the datetime column (originally “date”) to see what’s going on. That
 allows us to evaluate what time coordinates were used. The challenge
@@ -156,8 +157,8 @@ Aragonite, Dimensionless \| \| \|—————–\|————————-\|
 # Evaluating Time Coordinates
 
 There has been some ambiguity in the past about how datetimes were
-created by FOCB. We checkher eto confirm that those problems have been
-respolved
+created by FOCB. We check here to confirm that those problems have been
+resolved.
 
 ## Common Timezone Names for Reference
 
@@ -214,7 +215,7 @@ Data in Excel was stored in clock time, but there are still
 inconsistencies, probably because times in Excel has both values and
 formats, which can lead to confusion.
 
-The conclusion is, we need to work wit calculated dates and times, not
+The conclusion is, we need to work with calculated dates and times, not
 rely on the ones in the Excel spreadsheets.
 
 ``` r
@@ -225,7 +226,7 @@ the_data <- the_data %>%
 
 ## Checking start of DST
 
-Lets look around the start of daylight savings:
+Let’s look around the start of daylight savings:
 
 2017 March 12 November 5  
 2018 March 11 November 4
@@ -298,7 +299,7 @@ more than an hour and one minute apart). We find about 27 gaps in the
 data, where data is missing for a few hours. We show both the record
 immediately before the gap and immediately after the gap.
 
-Many gaps appear to start at midnight, and so may reflect dat aQA/QC
+Many gaps appear to start at midnight, and so may reflect data QA/QC
 practices.
 
 ``` r
@@ -336,7 +337,7 @@ the_data <- the_data %>%
 -   Depth and temperature show strong bimodal distributions.  
 -   DO shows some bimodal structure, but DOSat does not.
 
-So, lets look at those bimodal distributions
+So, let’s look at those bimodal distributions.
 
 ``` r
 the_data %>% ggplot(aes(datetime, temperature)) + 
@@ -346,7 +347,7 @@ the_data %>% ggplot(aes(datetime, temperature)) +
 
 <img src="FOCB-Continuous-Time-and-Tide_files/figure-gfm/unnamed-chunk-15-1.png" style="display: block; margin: auto;" />
 
-Slicing that by temperature wil lshow higher densities of observations
+Slicing that by temperature will show higher densities of observations
 at seasonal high and low values, where temperatures do not change as
 rapidly.
 
@@ -364,7 +365,7 @@ monthmeans <- the_data %>%
   filter(! is.na(month))
 ```
 
-WE plot against time shifted by six hours, so the value of zero is six
+We plot against time shifted by six hours, so the value of zero is six
 a.m, which should be about the coolest time of day.
 
 ``` r
@@ -391,7 +392,7 @@ long periods of the year that are relatively warm (July, August and
 September) and relatively cold (Latter half of December, January,
 February, March).
 
-Lets try to color code by month, and add markers for the monthly means.
+Let’s try to color code by month, and add markers for the monthly means.
 The only trick here was getting the color ramps to assign consistently
 and correctly. Note the use of “arrange” to reorder the dataframes.
 Apparently, ggplot assigns colors in order of first appearance of a
@@ -562,7 +563,7 @@ ggplot(tmp, aes(sincehigh, depth, color = hightide)) +
 <img src="FOCB-Continuous-Time-and-Tide_files/figure-gfm/unnamed-chunk-26-1.png" style="display: block; margin: auto;" />
 No interval since high tide should be over 13 hours, so we are looking
 at data with some impossible values. They arise because we have some
-gaps in the data, creating spacews between high tides that are longer
+gaps in the data, creating spaces between high tides that are longer
 than 13 hours. Those are not meaningful values, but a result of limits
 in the source data. They would not occur with consistent high tide
 times, as one can get from NOAA.

@@ -57,6 +57,7 @@ dir.create(file.path(getwd(), 'figures'), showWarnings = FALSE)
 We specify column names because FOCB data has a row of names, a row of units,
 then the data.  This approach is simpler than reading names from the first
 row and correcting them to be R syntactic names.
+
 ```{r load_data, warning = FALSE}
 fn    <- 'FOCB Surface All Current Sites With BSV Data.xlsx'
 fpath <- file.path(sibling,fn)
@@ -101,6 +102,7 @@ the_data <- the_data %>%
 Our data contains two stations that are not associated with locations that were 
 included in our spatial data.  We can see that because when we `left_join()` by 
 `station`, no `station_name` is carried over.
+
 ```{r unused_sites}
 l <- the_data %>%
   group_by(station) %>%
@@ -114,6 +116,7 @@ If we look at those records, one is represented by only a single observation,
 and the other only by data from 2020.  Neither matter for the current analysis.
 They will get filtered out when we select data to describe recent conditions,
 and trends.
+
 ```{r show_unused_data}
 the_data %>%
   filter(station %in% l)
@@ -125,7 +128,6 @@ the_data <- the_data %>%
   mutate(doy = as.numeric(format(dt, '%j'))) %>%
   relocate(doy, .after = dt)
 ```
-
 
 ## Address Secchi Censored Values
 ```{r secchi_censored}
@@ -149,6 +151,7 @@ tmp <- the_data %>%
 xtabs(~ year + parameter, data = tmp)
 rm(tmp)
 ```
+
 So note that Chlorophyll data is available going back to 2001, but from 
 relatively few samples until 2018.  We may want to limit Chlorophyll Analysis 
 to the long-term sites.
@@ -212,6 +215,7 @@ hierarchical models that include a random term for the year or not.
 ## Create Trend Data
 First, we create a tibble containing information on years in which each
 station was sampled.
+
 ```{r which_years}
 years_data <- the_data %>%
   group_by(station, year) %>%
@@ -226,6 +230,7 @@ Then we identify stations with at least 10 years of data, and at least three
 years of data from the last five years, and use that list to select data for
 trend analysis.  Finally, we adjust the levels in the `station` and 
 `station_name` variables.
+
 ```{r build_trend_data}
 selected_stations <- years_data %>%
   filter(years> 9, recent_years >2) %>%
@@ -252,6 +257,7 @@ years.  We address that momentarily
 Coverage of chlorophyll data is sparse prior to 2007, and uneven at most
 stations since.  We create more limited (transformed) chlorophyll data sets, 
 focusing only on the three sites for which we have long-term data.
+
 ```{r limit_chl_long_term}
 trend_data <- trend_data %>%
   mutate(log_chl_2 = if_else(station %in% c('P5BSD', 'P6FGG', 'P7CBI'),
@@ -352,6 +358,7 @@ nested_data <- nested_data %>%
 
 ## Diagnostic Plots
 We focus on the simpler model.  Others should be similar or slightly better.
+
 ```{r diagnostics}
 for (p in nested_data$parameter) {
   cat('\n')
@@ -410,7 +417,7 @@ simplify our findings for State of Casco Bay.
 ```{r build_interaction_plots}
 nested_data <- nested_data %>%
   mutate(emmi = map(lmers_2, function(mod) emmip(mod, month ~ year, 
-                                                  at = list(year = 1993:2020)))) %>%
+                                                 at = list(year = 1993:2020)))) %>%
   mutate(emmi = list(emmi[[1]] + ggtitle(parameter)))
 ```
 
@@ -431,6 +438,7 @@ We fit the models with simple tensor smoothing terms.  Using interaction tensor
 terms showed that the interaction term was significant in all cases.  But the 
 results are hard to interpret.  Her we show only a fairly low dimension GAM
 tensor interaction fit, to figure out what is going on seasonally.
+
 ```{r gam_models}
 nested_data <- nested_data %>%
   mutate(gams = map(data, function(df) gam(value ~ te(year, doy, k = 4) +
@@ -454,7 +462,7 @@ for (p in nested_data$parameter) {
 *  Salinity shows slightly lower salinity in spring, and higher salinity in the
    fall.
    
-*  Dissolved oxygen shown no strong long-term trend.
+*  Dissolved oxygen shows no strong long-term trend.
 
 *  Percent Saturation shows a complex pattern, with evidence for higher 
    percent saturation in recent years, with a change in the early 2000s.
@@ -478,7 +486,7 @@ recent years.  Higher Secchi, lower salinity, higher pH, lower chlorophyll.
 
 That suggests we might analyze separate seasonal trends. 
 
-# Impact of Unevean Sampling On Chlorophyll Models
+# Impact of Uneven Sampling On Chlorophyll Models
 We focus here on the the impact of whether we look at all chlorophyll data or 
 only data from the three long-term chlorophyll sites.  We look at the log(x+1) 
 models, but a similar effect occurs with our other models. Data restricted to 
@@ -530,6 +538,7 @@ the model in a way that `emmeans` will recognize.
 We also want a version of our model that incorporates the data transform
 into the model object, not the data, to facilitate plotting.  We do that by 
 replacing the 'chl' data and model in the nested tibble.
+
 ```{r respecify_chlorophyll_data}
 dat <- nested_data %>%
   filter(parameter == 'chl') %>%
@@ -542,6 +551,7 @@ dat <- dat %>%
 
 `emmeans` recognizes the log(value + 1) transform, but it does not recognize the 
 equivalent log1p() transform.  
+
 ```{r replace_data_and_model}
 new_mod <- gam(log(value + 1) ~ year + 
                  month + 
@@ -573,9 +583,9 @@ for (p in nested_data$parameter) {
    terms, although they are important for several of these models, as shown
    above.
 
-*  Dissolved oxygen and pH show limited evidence of a trends over time. What
+*  Dissolved oxygen and pH show limited evidence of trends over time. What
    trends we found for pH were confounded with seasonal patterns. Interestingly, 
-   percent saturation DOES show a  statistically detectable long-term trend even 
+   percent saturation DOES show a statistically detectable long-term trend even 
    though DO does not.
 
 *  The month factor and the station by station random factor are
@@ -593,6 +603,7 @@ cbind(nested_data$parameter, nested_data$slopes)
 It's quite possible that some of these "significant" relationships are small
 enough to have little meaning.  We need to pull out slopes to include in the 
 graphics.
+
 ```{r add_annotations}
 nested_data <- nested_data %>%
   mutate(ch_10yr = map(slopes, function(s) round(s * 10, 3))) %>%
@@ -625,13 +636,15 @@ nested_data <- nested_data %>%
 ```
 
 ### Check results
-Note that for the transformed models, the returned point estimate is "emmean"
+Note that for the transformed models, the returned point estimate is "emmean".
+
 ```{r check_1}
 nested_data$preds[[1]]
 ```
 
 ### Check Chlorophyll
-The point estimate is "response"
+The point estimate is "response".
+
 ```{r check_chl}
 nested_data$preds[[7]]
 ```
@@ -639,6 +652,7 @@ nested_data$preds[[7]]
 #### Correct Chlorphyll
 The chlorophyll data from the three long-term sites began in 2001. We do not
 want to show predictions before that time.
+
 ```{r correct_chl}
 pp <- nested_data %>%
   filter(parameter == 'chl') %>%
@@ -653,6 +667,7 @@ nested_data$preds[nested_data$parameter=='chl'] <- list(pp)
 ## Create Transform Objects
 This allows us to automate plotting the chlorophyll data on a transformed y 
 axis.
+
 ```{r transforms_2}
 trans_list <- list(secchi_2 = 'identity',
                    temperature = 'identity',
@@ -707,6 +722,7 @@ my_plot_fxn <- function(dat, preds, label = '', units = '',
 ## Generate Graphics
 When we add in the raw data, however, we can see how minor most of these 
 "significant" trends are when seen against bay-wide and season-wide variability.
+
 ```{r generate_graphics}
 for (p in nested_data$parameter) {
   row <- nested_data[nested_data$parameter == p,] 

@@ -29,8 +29,8 @@ Curtis C. Bohlen, Casco Bay Estuary Partnership
     -   [Intereaction Plots](#intereaction-plots)
 -   [GAM models](#gam-models)
     -   [Discussion](#discussion)
--   [Impact of Unevean Sampling On Chlorophyll
-    Models](#impact-of-unevean-sampling-on-chlorophyll-models)
+-   [Impact of Uneven Sampling On Chlorophyll
+    Models](#impact-of-uneven-sampling-on-chlorophyll-models)
 -   [Clean Up `nested_data`](#clean-up-nested_data)
 -   [Final Model Review](#final-model-review)
     -   [ANOVAs](#anovas)
@@ -44,7 +44,8 @@ Curtis C. Bohlen, Casco Bay Estuary Partnership
         -   [Check Chlorophyll](#check-chlorophyll)
     -   [Create Transform Objects](#create-transform-objects)
     -   [Create Plotting Function](#create-plotting-function)
--   [Generate Graphics](#generate-graphics)
+    -   [Generate Graphics](#generate-graphics)
+        -   [Revise Chlorophyll Axis](#revise-chlorophyll-axis)
 
 <img
     src="https://www.cascobayestuary.org/wp-content/uploads/2014/04/logo_sm.jpg"
@@ -68,25 +69,32 @@ historical record.
 
 ``` r
 library(tidyverse)
-#> -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
-#> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.0.5     v dplyr   1.0.3
-#> v tidyr   1.1.2     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.0
+#> Warning: package 'tidyverse' was built under R version 4.0.5
+#> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
+#> v ggplot2 3.3.5     v purrr   0.3.4
+#> v tibble  3.1.6     v dplyr   1.0.7
+#> v tidyr   1.1.4     v stringr 1.4.0
+#> v readr   2.1.0     v forcats 0.5.1
+#> Warning: package 'ggplot2' was built under R version 4.0.5
+#> Warning: package 'tidyr' was built under R version 4.0.5
+#> Warning: package 'dplyr' was built under R version 4.0.5
+#> Warning: package 'forcats' was built under R version 4.0.5
 #> -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(readxl)
 
 library(mgcv)     # For `gam()` and `gamm()` models
+#> Warning: package 'mgcv' was built under R version 4.0.5
 #> Loading required package: nlme
 #> 
 #> Attaching package: 'nlme'
 #> The following object is masked from 'package:dplyr':
 #> 
 #>     collapse
-#> This is mgcv 1.8-33. For overview type 'help("mgcv-package")'.
+#> This is mgcv 1.8-38. For overview type 'help("mgcv-package")'.
 library(emmeans)
+#> Warning: package 'emmeans' was built under R version 4.0.5
 
 library(CBEPgraphics)
 load_cbep_fonts()
@@ -207,9 +215,8 @@ the_data <- the_data %>%
          bottom_flag = secchi == "BSV") %>%
   relocate(secchi_2, .after = secchi) %>%
   relocate(bottom_flag, .after = secchi_2)
-#> Warning: Problem with `mutate()` input `secchi_2`.
-#> i NAs introduced by coercion
-#> i Input `secchi_2` is `if_else(secchi == "BSV", water_depth, as.numeric(secchi))`.
+#> Warning in replace_with(out, !condition, false, fmt_args(~false), glue("length
+#> of {fmt_args(~condition)}")): NAs introduced by coercion
 ```
 
 ## Prevalence of Parameters by Year
@@ -357,9 +364,7 @@ the_data <- the_data %>%
                            NA_real_, log_chl)) %>%
   relocate(sqrt_secchi, .after = secchi_2) %>%
   relocate(log_chl, log1_chl, .after = chl)
-#> Warning: Problem with `mutate()` input `log_chl`.
-#> i NaNs produced
-#> i Input `log_chl` is `log(chl)`.
+#> Warning in log(chl): NaNs produced
 ```
 
 # Analysis of Trends
@@ -921,7 +926,7 @@ decide how to simplify our findings for State of Casco Bay.
 ``` r
 nested_data <- nested_data %>%
   mutate(emmi = map(lmers_2, function(mod) emmip(mod, month ~ year, 
-                                                  at = list(year = 1993:2020)))) %>%
+                                                 at = list(year = 1993:2020)))) %>%
   mutate(emmi = list(emmi[[1]] + ggtitle(parameter)))
 ```
 
@@ -1029,7 +1034,7 @@ for (p in nested_data$parameter) {
 -   Salinity shows slightly lower salinity in spring, and higher
     salinity in the fall.
 
--   Dissolved oxygen shown no strong long-term trend.
+-   Dissolved oxygen shows no strong long-term trend.
 
 -   Percent Saturation shows a complex pattern, with evidence for higher
     percent saturation in recent years, with a change in the early
@@ -1058,7 +1063,7 @@ chlorophyll.
 
 That suggests we might analyze separate seasonal trends.
 
-# Impact of Unevean Sampling On Chlorophyll Models
+# Impact of Uneven Sampling On Chlorophyll Models
 
 We focus here on the the impact of whether we look at all chlorophyll
 data or only data from the three long-term chlorophyll sites. We look at
@@ -1336,7 +1341,7 @@ for (p in nested_data$parameter) {
     fit interaction terms, although they are important for several of
     these models, as shown above.
 
--   Dissolved oxygen and pH show limited evidence of a trends over time.
+-   Dissolved oxygen and pH show limited evidence of trends over time.
     What trends we found for pH were confounded with seasonal patterns.
     Interestingly, percent saturation DOES show a statistically
     detectable long-term trend even though DO does not.
@@ -1404,7 +1409,7 @@ nested_data <- nested_data %>%
 ### Check results
 
 Note that for the transformed models, the returned point estimate is
-“emmean”
+“emmean”.
 
 ``` r
 nested_data$preds[[1]]
@@ -1444,7 +1449,7 @@ nested_data$preds[[1]]
 
 ### Check Chlorophyll
 
-The point estimate is “response”
+The point estimate is “response”.
 
 ``` r
 nested_data$preds[[7]]
@@ -1556,7 +1561,7 @@ my_plot_fxn <- function(dat, preds, label = '', units = '',
 }
 ```
 
-# Generate Graphics
+## Generate Graphics
 
 When we add in the raw data, however, we can see how minor most of these
 “significant” trends are when seen against bay-wide and season-wide
@@ -1575,42 +1580,44 @@ for (p in nested_data$parameter) {
 }
 #> Warning in if (!is.na(preds[[1]])) {: the condition has length > 1 and only the
 #> first element will be used
-#> Warning: Removed 104 rows containing missing values (geom_point).
+#> Warning: Removed 102 rows containing missing values (geom_point).
 #> Warning in if (!is.na(preds[[1]])) {: the condition has length > 1 and only the
 #> first element will be used
 ```
 
 <img src="Surface_Analysis_Trends_files/figure-gfm/generate_graphics-1.png" style="display: block; margin: auto;" />
 
-    #> Warning: Removed 108 rows containing missing values (geom_point).
+    #> Warning: Removed 92 rows containing missing values (geom_point).
 
     #> Warning: the condition has length > 1 and only the first element will be used
 
 <img src="Surface_Analysis_Trends_files/figure-gfm/generate_graphics-2.png" style="display: block; margin: auto;" />
 
-    #> Warning: Removed 99 rows containing missing values (geom_point).
+    #> Warning: Removed 105 rows containing missing values (geom_point).
 
 <img src="Surface_Analysis_Trends_files/figure-gfm/generate_graphics-3.png" style="display: block; margin: auto;" />
 
-    #> Warning: Removed 104 rows containing missing values (geom_point).
+    #> Warning: Removed 103 rows containing missing values (geom_point).
 
     #> Warning: the condition has length > 1 and only the first element will be used
 
 <img src="Surface_Analysis_Trends_files/figure-gfm/generate_graphics-4.png" style="display: block; margin: auto;" />
 
-    #> Warning: Removed 100 rows containing missing values (geom_point).
+    #> Warning: Removed 91 rows containing missing values (geom_point).
 
 <img src="Surface_Analysis_Trends_files/figure-gfm/generate_graphics-5.png" style="display: block; margin: auto;" />
 
-    #> Warning: Removed 79 rows containing missing values (geom_point).
+    #> Warning: Removed 91 rows containing missing values (geom_point).
 
     #> Warning: the condition has length > 1 and only the first element will be used
 
 <img src="Surface_Analysis_Trends_files/figure-gfm/generate_graphics-6.png" style="display: block; margin: auto;" />
 
-    #> Warning: Removed 14 rows containing missing values (geom_point).
+    #> Warning: Removed 15 rows containing missing values (geom_point).
 
 <img src="Surface_Analysis_Trends_files/figure-gfm/generate_graphics-7.png" style="display: block; margin: auto;" />
+
+### Revise Chlorophyll Axis
 
 ``` r
 row <- nested_data[nested_data$parameter == 'chl',]
@@ -1627,7 +1634,7 @@ plt +
   scale_y_continuous(trans = row$transf, breaks = c(0,1,  5, 10, 50, 100, 200))
 #> Scale for 'y' is already present. Adding another scale for 'y', which will
 #> replace the existing scale.
-#> Warning: Removed 13 rows containing missing values (geom_point).
+#> Warning: Removed 11 rows containing missing values (geom_point).
 ```
 
 <img src="Surface_Analysis_Trends_files/figure-gfm/rplot_chl-1.png" style="display: block; margin: auto;" />

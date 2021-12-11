@@ -34,7 +34,7 @@ Curtis C. Bohlen, Casco Bay Estuary Partnership
 
 This Notebook analyzes FOCB’s “Surface” data. In particular, it compares
 observed water quality conditions with the level of nearby impervious
-surfaces. Imperviouos surfaces, like roads, parking areas,a nd rooftops,
+surfaces. Impervious surfaces, like roads, parking areas, and rooftops,
 area reasonable surrogate for urbanization, and are used here in that
 context.
 
@@ -55,11 +55,11 @@ archives.
 library(tidyverse)
 #> Warning: package 'tidyverse' was built under R version 4.0.5
 #> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
-#> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.1.1     v dplyr   1.0.5
-#> v tidyr   1.1.3     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.1
-#> Warning: package 'tibble' was built under R version 4.0.5
+#> v ggplot2 3.3.5     v purrr   0.3.4
+#> v tibble  3.1.6     v dplyr   1.0.7
+#> v tidyr   1.1.4     v stringr 1.4.0
+#> v readr   2.1.0     v forcats 0.5.1
+#> Warning: package 'ggplot2' was built under R version 4.0.5
 #> Warning: package 'tidyr' was built under R version 4.0.5
 #> Warning: package 'dplyr' was built under R version 4.0.5
 #> Warning: package 'forcats' was built under R version 4.0.5
@@ -70,6 +70,7 @@ library(readxl)
 library(readr)
 
 library(lme4)
+#> Warning: package 'lme4' was built under R version 4.0.5
 #> Loading required package: Matrix
 #> 
 #> Attaching package: 'Matrix'
@@ -316,7 +317,6 @@ for (p in nested_data$parameter) {
          #geom_smooth(method = 'lm') +
          ylab(p)
  )
-       
 }
 #> No summary function supplied, defaulting to `mean_se()`
 ```
@@ -444,7 +444,7 @@ for (p in nested_data$parameter) {
 ```
 
 For all those models the differences between land weighted and total pct
-cover within a kilometer are tiny. WE use the land-scaled IC value as
+cover within a kilometer are tiny. We use the land-scaled IC value as
 more useful
 
 ## 500 Meter IC

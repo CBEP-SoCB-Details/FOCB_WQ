@@ -25,7 +25,7 @@ looking at levels of chlorophyll A. Additional details of these analyses are
 presented in the "Surface_Analysis_Trends.md" RNotebook.  
 
 In developing those analyses, we ran into a problem generating usable graphics
-for State of Casco BAy, when the Y axis is a transformed variable.
+for State of Casco Bay, when the Y axis is a transformed variable.
 
 # Load Libraries
 ```{r load_libraries}
@@ -53,6 +53,7 @@ sibling  <- file.path(parent,sibfldnm)
 We specify column names because FOCB data has a row of names, a row of units,
 then the data.  This approach is simpler than reading names from the first
 row and correcting them to be R syntactic names.
+
 ```{r load_data, warning = FALSE}
 fn    <- 'FOCB Surface All Current Sites With BSV Data.xlsx'
 fpath <- file.path(sibling,fn)
@@ -88,9 +89,9 @@ the_data <- the_data %>%
   relocate(doy, .after = dt)
 ```
 
-
 ## Transformations 
 We create several generalized log transforms of the chloride data.
+
 ```{r transforms}
 the_data <- the_data %>%
   mutate(log_chl = log(chl),
@@ -103,7 +104,7 @@ the_data <- the_data %>%
 
 # Analysis of Trends
 Our goal here is to identify whether there are long-term trends in chlorophyll.
-This is problematic...
+This is problematic.
 
 ## Construct Nested Tibble
 ```{r nested}
@@ -142,6 +143,7 @@ nested_data <- the_data %>%
 ```{r minimum_chl}
 min(nested_data$data[[1]]$value)
 ```
+
 ```{r sample_sizes}
 map(nested_data$data, function(df) length(df$station))
 ```
@@ -181,6 +183,7 @@ nested_data <- nested_data %>%
 
 ## Diagnostic Plots
 We focus on the simpler model.  Others should be similar or slightly better.
+
 ```{r diagnostics}
 for (p in nested_data$parameter) {
   cat('\n')
@@ -230,6 +233,7 @@ nested_data <- nested_data %>%
 
 nested_data$emmi
 ```
+
 Not surprisingly, the pattern is the same regardless of model selected.  
 Basically, chlorophyll levels have declined in spring, held more or less 
 steady in mid summer, and increased in fall.
@@ -241,6 +245,7 @@ using a tensor smooth by day of year and year.
 Using interaction tensor  terms showed that the interaction term was significant 
 in all cases.  But the results are hard to interpret.  Here we show only a 
 fairly low dimension 2-D GAM fit, to figure out what is going on seasonally.
+
 ```{r gam_models}
 nested_data <- nested_data %>%
   mutate(gams = map(data, function(df) gam(value ~ te(year, doy, k = 4) +
@@ -254,6 +259,7 @@ for (p in nested_data$parameter) {
   title(sub = p)
 }
 ```
+
 Chlorophyll shows a fairly steady decline in spring, and on increase in fall,
 with little change in summer.  That general result is robust to the 
 transformation used, but the untransformed fit shows the effect of a handful of 
@@ -264,7 +270,6 @@ both high and low values in the earlier record.
 nested_data <- nested_data %>%
   select(-lmers_2, -polys, -gams, -compare, -emmi)
 ```
-
 
 # Predictions with `emmeans()`
 ## Handling Transformations
@@ -294,8 +299,8 @@ We would like to be able to pass the transform object to each  `emmeans()` call.
 This means we probably can't run the analysis with a call to `map()`, but will 
 need to assemble results in a list via a `for` loop.
 
-
 First, what transforms do we need?  Lets put them in a named list.
+
 ```{r build_trans_list_1}
 trans_list <- list(chl = "identity",
      log_chl = "log",
@@ -309,6 +314,7 @@ trans_list <- list(chl = "identity",
 The only trick involved is explicitly embedding the object returned from 
 `emmeans()` (which is an S4 object) in a list before adding it to the larger
 list.
+
 ```{r extract_emmeans}
 preds <- list()
 for (p in nested_data$parameter) {
@@ -355,6 +361,7 @@ nested_data <- nested_data %>%
  mutate(slopes = map(lmers, function(mod) coef(mod)[[2]]))
 cbind(nested_data$parameter, nested_data$slopes)
 ```
+
 At least all slopes are negative....
 
 # Build Graphics
@@ -393,7 +400,6 @@ nested_data$trans <- trans_list
 ```
 
 ## Create Plotting Function
-Note the mismatch here -- I have TRANSFORMED 
 ```{r plot_fxn}
 my_plot_fxn <- function(dat, preds, label = '', units = '', transf = 'identity') {
   preds <- summary(preds)
@@ -447,6 +453,7 @@ the log transform).
 ## Rebuild Data Frame
 Here, we pull the raw chlorophyll data from the nested tibble, and create
 working data sets to explore.
+
 ```{r rebuild_data}
 df_three <- nested_data %>%
   filter(parameter == 'chl') %>%
@@ -459,6 +466,7 @@ df_three <- df_three %>%
 We replace fourteen zero chlorophyll observations (and one negative one) with
 either a non-zero replacement value (starting at half of the lowest positive
 reported value), or with NA.
+
 ```{r alternate_dfs}
 df_three2 <- df_three %>% mutate(value = if_else(value <= 0, 0.05, value))
 df_three3 <- df_three %>% mutate(value = if_else(value <= 0, 0.01, value))
@@ -471,6 +479,7 @@ ggplot(df_three2, aes(year, value)) +
   geom_point(aes(color = value < 0.1), alpha = 0.25) +
   scale_y_log10()
 ```
+
 Since most zero values are older, the nominal zero values have a large 
 influence on estimated slopes.  The lower we set the replacement value we
 assign to include these observations in the regression, the more 
@@ -501,7 +510,7 @@ summary(mod5)$p.table[2,]
 So, if we replace the zero values with `NA`, we see a significantly significant
 DECREASE in log(chlorophyll) over time.  If we replace them with a a 
 sufficiently small value (here 0.0001), the model suggests a statistically 
-significant INCREASE in log(chlorophyll).
+significant **increase** in log(chlorophyll).
 
 # Discussion
 None of that engenders much confidence in the models.  We saw earlier that our

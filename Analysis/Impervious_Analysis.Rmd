@@ -22,7 +22,7 @@ knitr::opts_chunk$set(fig.align = 'center',
 # Introduction
 This Notebook analyzes FOCB's "Surface" data.  In particular, it compares 
 observed water quality conditions with the level of nearby impervious surfaces. 
-Imperviouos surfaces, like roads, parking areas,a nd rooftops, area reasonable 
+Impervious surfaces, like roads, parking areas, and rooftops, area reasonable 
 surrogate for urbanization, and are used here in that context.
 
 The water quality data are pulled from 23 long term monitoring locations around
@@ -34,7 +34,6 @@ collected by volunteers.
 Impervious cover values were  based on 2007 impervious cover data,
 based on GIS analysis.  Details of the GIS analysis are provided in the
 'DATA_NOTES.md' file found with the GIS data in the Derived Data archives.
-
 
 # Load Libraries
 ```{r load_libraries}
@@ -64,6 +63,7 @@ sibling  <- file.path(parent,sibfldnm)
 We specify column names because FOCB data has a row of names, a row of units,
 then the data.  This approach is simpler than reading names from the first
 row and correcting them to be R syntactic names.
+
 ```{r load_data, warning = FALSE}
 fn    <- 'FOCB Surface All Current Sites With BSV Data.xlsx'
 fpath <- file.path(sibling,fn)
@@ -108,6 +108,7 @@ the_data <- the_data %>%
 Our data contains two stations that are not associated with 
 locations that were included in our spatial data.  We can see that because
 when we `left_join()` by `station`, no `station_name` value is carried over.
+
 ```{r}
 l <- the_data %>%
   group_by(station) %>%
@@ -121,6 +122,7 @@ If we look at those records, on is represented by only a single observation, and
 the other only by data from 2020.  Neither matter for the current analysis. They
 will get filtered out when we select data to describe recent conditions, and 
 trends.
+
 ```{r}
 the_data %>%
   filter(station %in% l)
@@ -137,6 +139,7 @@ the_data <- the_data %>%
 
 ## Create Recent Data
 We filter to the last five FULL years of data, 2015 through 2019.
+
 ```{r}
 recent_data <- the_data %>%
   filter(year > 2014 & year < 2020) %>%
@@ -233,9 +236,7 @@ for (p in nested_data$parameter) {
          #geom_smooth(method = 'lm') +
          ylab(p)
  )
-       
 }
-
 ```
 
 # Hierarchical Linear Models
@@ -243,6 +244,7 @@ We have a fundamentally nested analysis here, with each "Station" acting as a
 random exemplar of all possible stations.  We have no variability in
 impervious cover within stations, so the appropriate random term is only an
 intercept.
+
 ```{r}
 nested_data <- nested_data %>%
   mutate(lm500 = map(data, function(df) lmer(value ~ pct_500 + month + (1 | station),
@@ -270,7 +272,7 @@ for (p in nested_data$parameter) {
 ```
 
 For all those models the differences between land weighted and total pct cover
-within a kilometer are tiny.  WE use the land-scaled IC value as more useful
+within a kilometer are tiny.  We use the land-scaled IC value as more useful
 
 ## 500 Meter IC
 ### Total Percentage of Nearby IC
@@ -282,9 +284,9 @@ for (p in nested_data$parameter) {
   cat('\n\n')
 }
 ```
+
 Unscaled impervious cover is probably significant for percent saturation. We
 need to check significance with better methods.
-
 
 ### Percent Imperviousness on Nearby Land
 ```{r}
@@ -295,16 +297,17 @@ for (p in nested_data$parameter) {
   cat('\n\n')
 }
 ```
+
 So, land-scaled impervious percentage at 500m is NOT related to any of our
 water quality parameters. 
 
 A similar pattern appears at 1000 meter (Not shown), but with a lower (possibly 
 not significant?) F value.
 
-
 ## Near Land Models
 Why might the scaling matter?  Perhaps it's not IC, but proximity to land that
 matters.  We explore that by looking at Percent Saturation.
+
 ```{r}
 land_model_500 <-  lmer(pctsat ~ land_500 + month + (1 | station),
                                              REML = FALSE,
@@ -319,7 +322,6 @@ land_model_1000 <- lmer(pctsat ~ land_1000 + month + (1 | station),
 ```{r}
 anova(land_model_500)
 ```
-
 
 ```{r}
 anova(land_model_1000)

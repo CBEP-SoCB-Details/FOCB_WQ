@@ -57,6 +57,7 @@ dir.create(file.path(getwd(), 'figures'), showWarnings = FALSE)
 We specify column names because FOCB data has a row of names, a row of units,
 then the data.  This approach is simpler than reading names from the first
 row and correcting them to be R syntactic names.
+
 ```{r load_data, warning = FALSE}
 fn    <- 'FOCB Surface All Current Sites With BSV Data.xlsx'
 fpath <- file.path(sibling,fn)
@@ -101,6 +102,7 @@ the_data <- the_data %>%
 Our data contains two stations that are not associated with 
 locations that were included in our spatial data.  We can see that because
 when we `left_join()` by `station`, no `station_name` value is carried over.
+
 ```{r}
 l <- the_data %>%
   group_by(station) %>%
@@ -114,6 +116,7 @@ If we look at those records, on is represented by only a single observation, and
 the other only by data from 2020.  Neither matter for the current analysis. They
 will get filtered out when we select data to describe recent conditions, and 
 trends.
+
 ```{r}
 the_data %>%
   filter(station %in% l)
@@ -135,6 +138,7 @@ facilitate "parallel" construction of statistical models.  That transform
 regularizes variances and linearizes response fairly well. We also develop a 
 square root transform of the Secchi data, for similar purposes, but the results
 are not as effective.
+
 ```{r}
 the_data <- the_data %>%
   mutate(sqrt_secchi = sqrt(secchi_2),
@@ -157,6 +161,7 @@ months as inshore sites.
 
 ## Create Recent Data
 We filter to the last five FULL years of data, 2015 through 2019.
+
 ```{r}
 recent_data <- the_data %>%
   filter(year > 2014 & year < 2020) %>%
@@ -170,6 +175,7 @@ especially medians and means.  We will probably map median values, as
 they are less affected by the heavy-tailed distributions.  We also use a
 portion of these data later to test which station median characteristics are 
 correlated with median temperature.
+
 ```{r}
 sum_data <- recent_data %>%
   select(-dt, -year, -time, -sample_depth, 
@@ -193,6 +199,7 @@ write_csv(sum_data, fpath, na = '')
 ## Create Nested Tibble
 To run parallel analyses, we  reorganize the data into a  nested tibble.  We 
 also add a list of labels and measurement units to simplify labeling of plots.
+
 ```{r}
 units <- tibble(parameter = c('secchi_2', 'sqrt_secchi', 'temperature', 
                               'salinity', 'do',
@@ -235,6 +242,7 @@ for (p in nested_data$parameter) {
   cat('\n\n')
 }
 ```
+
 As suspected, all parameters differ among sites somewhere.
 
 ### Diagnostic Plots
@@ -259,7 +267,7 @@ So....
    transformed chlorophyll data.
 
 # Options for More Complex Models
-We could in principal adjust models for different sampling histories
+We could in principle adjust models for different sampling histories
 (years and months) but there is likely little value to doing so as the
 sampling histories are fairly uniform, with the exception of a few sites 
 added recently.
@@ -277,6 +285,7 @@ and whether there is any advantage to modeling those variations.
 ## Exploratory Graphics
 ### Create Long Form Data
 We create long-form data to facilitate faceted graphics.
+
 ```{r}
 long_data <- recent_data %>%
   select(-time, -sample_depth, 
@@ -320,6 +329,7 @@ We fit a year to year random factor and seasonal (monthly) terms. This reflects
 our belief that each year sets up somewhat differently due to weather, 
 especially in the spring, but that some seasonal patterns shuold be robust, and
 of potential direct interest to us.
+
 ```{r}
 nested_data <- nested_data %>%
   mutate(lmers = map(data, function(df) gam(value ~ station + month + 
@@ -338,6 +348,7 @@ for (p in nested_data$parameter) {
        sub = p)
 }
 ```
+
 Most of those look pretty good, with the exception of salinity, which looks 
 fairly awful,  and pH, which is merely bad.
 
@@ -352,6 +363,7 @@ We want the transformation in the model object, so we can use the tools in
 `emmeans` to extract marginal means.  We refit the chlorophyll model, add it
 to the nested tibble, and delete the other two chlorophyll data rows and the 
 square root transformed Secchi depth row.
+
 ```{r}
 df <- nested_data %>%
   filter(parameter == 'chl') %>%
@@ -376,6 +388,7 @@ for (p in nested_data$parameter) {
   cat('\n\n')
 }
 ```
+
 Note that the conclusions are that ALL parameters vary seasonally and by
 location.  Year to year variation is also important for all
 parameters, which is perhaps less obvious. (Note that this model 
@@ -396,19 +409,11 @@ the Bay.  If that is the case, we should be able to see high correlation with
 Temperature for the other parameters, especially after accounting for other known
 covariates.
 
-We take three approaches to check for the importance of temperature as a 
-predictor of other water quality parameters:
+We create long-form data to facilitate faceted graphics. We need to regenerate 
+the long-form data, retaining temperature as a predictor variable, not breaking 
+it into a separate data frame.
+ 
 
-1.   We examine whether temperature is a significant predictor of other
-parameters in linear models where we treat station and year as random factors
-
-2.  
- 
- 
- We need to regenerate the long-form data, retaining temperature asa predictor
- variable, not breaking it into a separate dataframe.
- 
- We create long-form data to facilitate faceted graphics.
 
 ```{r}
  nested_data_2 <- recent_data %>%
@@ -453,6 +458,7 @@ parameters within (random) stations and years.
 ## Correlations of Station Medians with Temperature
 We use Kendall's Tau as a robust / resistant alternative to Pearson Correlation 
 Coefficient.  A Spearman rank correlation would also be appropriate.
+
 ```{r}
 tmp <- sum_data %>%
   select(station, contains('_med')) %>%
@@ -466,11 +472,8 @@ for (parm in names(tmp)[3:11]) {
 }
 ```
 
-
 *  Warmer waters have:  
    *  Lower water clarity  
    *  Lower dissolved oxygen and percent saturation  
    *  Lower pH  
-   * Higher chlorophyll  
-
-
+   *  Higher chlorophyll  

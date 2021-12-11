@@ -61,11 +61,11 @@ only for that version.
 library(tidyverse)
 #> Warning: package 'tidyverse' was built under R version 4.0.5
 #> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
-#> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.1.1     v dplyr   1.0.5
-#> v tidyr   1.1.3     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.1
-#> Warning: package 'tibble' was built under R version 4.0.5
+#> v ggplot2 3.3.5     v purrr   0.3.4
+#> v tibble  3.1.6     v dplyr   1.0.7
+#> v tidyr   1.1.4     v stringr 1.4.0
+#> v readr   2.1.0     v forcats 0.5.1
+#> Warning: package 'ggplot2' was built under R version 4.0.5
 #> Warning: package 'tidyr' was built under R version 4.0.5
 #> Warning: package 'dplyr' was built under R version 4.0.5
 #> Warning: package 'forcats' was built under R version 4.0.5
@@ -82,8 +82,9 @@ library(mgcv)     # For `gam()` and `gamm()` models
 #> The following object is masked from 'package:dplyr':
 #> 
 #>     collapse
-#> This is mgcv 1.8-35. For overview type 'help("mgcv-package")'.
+#> This is mgcv 1.8-38. For overview type 'help("mgcv-package")'.
 library(emmeans)
+#> Warning: package 'emmeans' was built under R version 4.0.5
 
 library(CBEPgraphics)
 load_cbep_fonts()
@@ -225,7 +226,7 @@ length(unique(trend_data$station))
 
 We are reduced to only 17 stations with long-term records for trend
 analysis. We noted above that we have limited chlorophyll data before
-the last couple of years. We address that momentarily
+the last couple of years. We address that momentarily.
 
 # Construct Nested Tibble
 
@@ -306,8 +307,6 @@ nested_data <- nested_data %>%
                                                    year:season_3 + 
                                               s(station, bs = 're'), 
                                             data = df)))
-  
-
   names(nested_data$lmers) <- nested_data$parameter
   names(nested_data$lmers_2) <- nested_data$parameter
   names(nested_data$lmer_3_seas) <- nested_data$parameter
@@ -512,7 +511,7 @@ For State of Casco Bay, however, the month by month models are
 problematic to depict for a non-technical audience.
 
 So the choice of models comes down to a trade-off between model
-performance and clarity fo the State of Casco Bay audience. We need the
+performance and clarity for the State of Casco Bay audience. We need the
 interaction-based models, at least for some parameters.
 
 **Full Model** Too complicated to depict clearly. Eight independent
@@ -879,13 +878,13 @@ for (p in nested_data$parameter) {
 
 <img src="Surface_Seasonal_Trends_files/figure-gfm/plot_interactions-1.png" style="display: block; margin: auto;" /><img src="Surface_Seasonal_Trends_files/figure-gfm/plot_interactions-2.png" style="display: block; margin: auto;" /><img src="Surface_Seasonal_Trends_files/figure-gfm/plot_interactions-3.png" style="display: block; margin: auto;" /><img src="Surface_Seasonal_Trends_files/figure-gfm/plot_interactions-4.png" style="display: block; margin: auto;" /><img src="Surface_Seasonal_Trends_files/figure-gfm/plot_interactions-5.png" style="display: block; margin: auto;" /><img src="Surface_Seasonal_Trends_files/figure-gfm/plot_interactions-6.png" style="display: block; margin: auto;" /><img src="Surface_Seasonal_Trends_files/figure-gfm/plot_interactions-7.png" style="display: block; margin: auto;" /><img src="Surface_Seasonal_Trends_files/figure-gfm/plot_interactions-8.png" style="display: block; margin: auto;" />
 
--   Secchi shows significant differences in seasonal trends.
--   Temperatures also show significant interaction (a surprise!)
--   Salinity shows no significant trends or interactions.
--   DO shows no significant trends or interactions.
+-   Secchi shows significant differences in seasonal trends.  
+-   Temperatures also show significant interaction (a surprise!)  
+-   Salinity shows no significant trends or interactions.  
+-   DO shows no significant trends or interactions.  
 -   Pct Saturation shows a significant trend, but no significant
-    interactions.
--   pH shows significant trend, with interactions
+    interactions.  
+-   pH shows significant trend, with interactions  
 -   Chloride shows strong seasonal patterns.
 
 ### Seasonal Slopes
@@ -979,85 +978,85 @@ names(nested_data$slopes_compare) <- nested_data$parameter
 nested_data$slopes_compare
 #> $secchi_2
 #>  contrast        estimate      SE   df t.ratio p.value
-#>  Spring - Summer  0.00557 0.00311 5152 1.788   0.1735 
-#>  Spring - Fall    0.01009 0.00344 5152 2.937   0.0093 
-#>  Summer - Fall    0.00452 0.00278 5152 1.626   0.2346 
+#>  Spring - Summer  0.00557 0.00311 5152   1.788  0.1735
+#>  Spring - Fall    0.01009 0.00344 5152   2.937  0.0093
+#>  Summer - Fall    0.00452 0.00278 5152   1.626  0.2346
 #> 
 #> Results are averaged over the levels of: station 
 #> P value adjustment: tukey method for comparing a family of 3 estimates 
 #> 
 #> $temperature
 #>  contrast        estimate     SE   df t.ratio p.value
-#>  Spring - Summer  0.00863 0.0123 5622  0.700  0.7636 
-#>  Spring - Fall   -0.01789 0.0136 5622 -1.317  0.3859 
-#>  Summer - Fall   -0.02652 0.0111 5622 -2.397  0.0437 
+#>  Spring - Summer  0.00863 0.0123 5622   0.700  0.7636
+#>  Spring - Fall   -0.01789 0.0136 5622  -1.317  0.3859
+#>  Summer - Fall   -0.02652 0.0111 5622  -2.397  0.0437
 #> 
 #> Results are averaged over the levels of: station 
 #> P value adjustment: tukey method for comparing a family of 3 estimates 
 #> 
 #> $salinity
 #>  contrast        estimate     SE   df t.ratio p.value
-#>  Spring - Summer   0.0345 0.0183 5567  1.882  0.1438 
-#>  Spring - Fall     0.0165 0.0202 5567  0.815  0.6934 
-#>  Summer - Fall    -0.0180 0.0165 5567 -1.092  0.5188 
+#>  Spring - Summer   0.0345 0.0183 5567   1.882  0.1438
+#>  Spring - Fall     0.0165 0.0202 5567   0.815  0.6934
+#>  Summer - Fall    -0.0180 0.0165 5567  -1.092  0.5188
 #> 
 #> Results are averaged over the levels of: station 
 #> P value adjustment: tukey method for comparing a family of 3 estimates 
 #> 
 #> $do
 #>  contrast         estimate      SE   df t.ratio p.value
-#>  Spring - Summer -0.001061 0.00458 5504 -0.232  0.9708 
-#>  Spring - Fall    0.000415 0.00504 5504  0.082  0.9963 
-#>  Summer - Fall    0.001476 0.00409 5504  0.361  0.9307 
+#>  Spring - Summer -0.001061 0.00458 5504  -0.232  0.9708
+#>  Spring - Fall    0.000415 0.00504 5504   0.082  0.9963
+#>  Summer - Fall    0.001476 0.00409 5504   0.361  0.9307
 #> 
 #> Results are averaged over the levels of: station 
 #> P value adjustment: tukey method for comparing a family of 3 estimates 
 #> 
 #> $pctsat
 #>  contrast        estimate     SE   df t.ratio p.value
-#>  Spring - Summer   0.1038 0.0517 5459  2.006  0.1109 
-#>  Spring - Fall     0.0376 0.0570 5459  0.659  0.7874 
-#>  Summer - Fall    -0.0662 0.0463 5459 -1.430  0.3256 
+#>  Spring - Summer   0.1038 0.0517 5459   2.006  0.1109
+#>  Spring - Fall     0.0376 0.0570 5459   0.659  0.7874
+#>  Summer - Fall    -0.0662 0.0463 5459  -1.430  0.3256
 #> 
 #> Results are averaged over the levels of: station 
 #> P value adjustment: tukey method for comparing a family of 3 estimates 
 #> 
 #> $pH
 #>  contrast        estimate      SE   df t.ratio p.value
-#>  Spring - Summer  0.00567 0.00117 5069  4.867  <.0001 
-#>  Spring - Fall    0.00368 0.00129 5069  2.854  0.0121 
-#>  Summer - Fall   -0.00199 0.00104 5069 -1.914  0.1349 
+#>  Spring - Summer  0.00567 0.00117 5069   4.867  <.0001
+#>  Spring - Fall    0.00368 0.00129 5069   2.854  0.0121
+#>  Summer - Fall   -0.00199 0.00104 5069  -1.914  0.1349
 #> 
 #> Results are averaged over the levels of: station 
 #> P value adjustment: tukey method for comparing a family of 3 estimates 
 #> 
 #> $chl
 #>  contrast        estimate    SE  df t.ratio p.value
-#>  Spring - Summer   -0.556 0.327 418 -1.698  0.2070 
-#>  Spring - Fall     -1.060 0.363 418 -2.918  0.0104 
-#>  Summer - Fall     -0.504 0.291 418 -1.729  0.1955 
+#>  Spring - Summer   -0.556 0.327 418  -1.698  0.2070
+#>  Spring - Fall     -1.060 0.363 418  -2.918  0.0104
+#>  Summer - Fall     -0.504 0.291 418  -1.729  0.1955
 #> 
 #> Results are averaged over the levels of: station 
 #> P value adjustment: tukey method for comparing a family of 3 estimates 
 #> 
 #> $log1_chl
 #>  contrast        estimate     SE  df t.ratio p.value
-#>  Spring - Summer  -0.0273 0.0173 418 -1.574  0.2581 
-#>  Spring - Fall    -0.0709 0.0192 418 -3.685  0.0008 
-#>  Summer - Fall    -0.0436 0.0154 418 -2.825  0.0137 
+#>  Spring - Summer  -0.0273 0.0173 418  -1.574  0.2581
+#>  Spring - Fall    -0.0709 0.0192 418  -3.685  0.0008
+#>  Summer - Fall    -0.0436 0.0154 418  -2.825  0.0137
 #> 
 #> Results are averaged over the levels of: station 
 #> P value adjustment: tukey method for comparing a family of 3 estimates
 ```
 
--   secchi: Spring declines less than fall.
--   temperature: Summer increases less than fall
--   salinity: No differences
--   do: No differences
--   pctsat: No differences
+-   secchi: Spring declines less than fall  
+-   temperature: Summer increases less than fall  
+-   salinity: No differences  
+-   do: No differences  
+-   pctsat: No differences  
 -   pH Spring pH increased, both summer and fall decreased
--   chl Spring declined faster than fall.
--   log1\_chl Spring declined faster than summer or fall.
+-   chl Spring declined faster than fall  
+-   log1\_chl Spring declined faster than summer or fall
 
 # Graphics
 
@@ -1211,7 +1210,7 @@ row <- nested_data[nested_data$parameter == 'chl',]
     xlim(1993, 2020) +
     scale_y_continuous(trans = 'log1p', breaks = c(0,1,  5, 10, 50, 100, 200))
   print(plt)
-#> Warning: Removed 9 rows containing missing values (geom_point).
+#> Warning: Removed 11 rows containing missing values (geom_point).
 ```
 
 <img src="Surface_Seasonal_Trends_files/figure-gfm/fix_chl_plot-1.png" style="display: block; margin: auto;" />

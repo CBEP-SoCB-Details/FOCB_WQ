@@ -45,32 +45,39 @@ these analyses are presented in the “Surface\_Analysis\_Trends.md”
 RNotebook.
 
 In developing those analyses, we ran into a problem generating usable
-graphics for State of Casco BAy, when the Y axis is a transformed
+graphics for State of Casco Bay, when the Y axis is a transformed
 variable.
 
 # Load Libraries
 
 ``` r
 library(tidyverse)
-#> -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
-#> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.0.5     v dplyr   1.0.3
-#> v tidyr   1.1.2     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.0
+#> Warning: package 'tidyverse' was built under R version 4.0.5
+#> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
+#> v ggplot2 3.3.5     v purrr   0.3.4
+#> v tibble  3.1.6     v dplyr   1.0.7
+#> v tidyr   1.1.4     v stringr 1.4.0
+#> v readr   2.1.0     v forcats 0.5.1
+#> Warning: package 'ggplot2' was built under R version 4.0.5
+#> Warning: package 'tidyr' was built under R version 4.0.5
+#> Warning: package 'dplyr' was built under R version 4.0.5
+#> Warning: package 'forcats' was built under R version 4.0.5
 #> -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 library(readxl)
 
 library(mgcv)     # For `gam()` and `gamm()` models
+#> Warning: package 'mgcv' was built under R version 4.0.5
 #> Loading required package: nlme
 #> 
 #> Attaching package: 'nlme'
 #> The following object is masked from 'package:dplyr':
 #> 
 #>     collapse
-#> This is mgcv 1.8-33. For overview type 'help("mgcv-package")'.
+#> This is mgcv 1.8-38. For overview type 'help("mgcv-package")'.
 library(emmeans)
+#> Warning: package 'emmeans' was built under R version 4.0.5
 
 library(CBEPgraphics)
 load_cbep_fonts()
@@ -142,15 +149,13 @@ the_data <- the_data %>%
          log25_chl = log(chl + 0.25)) %>%
   mutate(log_chl = if_else(is.infinite(log_chl) | is.nan(log_chl),
                            NA_real_, log_chl))
-#> Warning: Problem with `mutate()` input `log_chl`.
-#> i NaNs produced
-#> i Input `log_chl` is `log(chl)`.
+#> Warning in log(chl): NaNs produced
 ```
 
 # Analysis of Trends
 
 Our goal here is to identify whether there are long-term trends in
-chlorophyll. This is problematic…
+chlorophyll. This is problematic.
 
 ## Construct Nested Tibble
 
@@ -475,6 +480,7 @@ nested_data$emmi
     #> [[5]]
 
 <img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/interaction_plots-5.png" style="display: block; margin: auto;" />
+
 Not surprisingly, the pattern is the same regardless of model
 selected.  
 Basically, chlorophyll levels have declined in spring, held more or less
@@ -505,6 +511,7 @@ for (p in nested_data$parameter) {
 ```
 
 <img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-1.png" style="display: block; margin: auto;" /><img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-2.png" style="display: block; margin: auto;" /><img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-3.png" style="display: block; margin: auto;" /><img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-4.png" style="display: block; margin: auto;" /><img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-5.png" style="display: block; margin: auto;" /><img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-6.png" style="display: block; margin: auto;" /><img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-7.png" style="display: block; margin: auto;" /><img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-8.png" style="display: block; margin: auto;" /><img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-9.png" style="display: block; margin: auto;" /><img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_gam_smoothers-10.png" style="display: block; margin: auto;" />
+
 Chlorophyll shows a fairly steady decline in spring, and on increase in
 fall, with little change in summer. That general result is robust to the
 transformation used, but the untransformed fit shows the effect of a
@@ -748,8 +755,6 @@ nested_data$trans <- trans_list
 
 ## Create Plotting Function
 
-Note the mismatch here – I have TRANSFORMED
-
 ``` r
 my_plot_fxn <- function(dat, preds, label = '', units = '', transf = 'identity') {
   preds <- summary(preds)
@@ -790,26 +795,26 @@ for (p in nested_data$parameter) {
   
   print(my_plot_fxn(d,p,l,u, t))
 }
-#> Warning: Removed 14 rows containing missing values (geom_point).
+#> Warning: Removed 11 rows containing missing values (geom_point).
 ```
 
 <img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/make_plots-1.png" style="display: block; margin: auto;" />
 
     #> Warning in self$trans$transform(x): NaNs produced
     #> Warning: Transformation introduced infinite values in continuous y-axis
-    #> Warning: Removed 14 rows containing missing values (geom_point).
+    #> Warning: Removed 26 rows containing missing values (geom_point).
 
 <img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/make_plots-2.png" style="display: block; margin: auto;" />
 
-    #> Warning: Removed 13 rows containing missing values (geom_point).
+    #> Warning: Removed 16 rows containing missing values (geom_point).
 
 <img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/make_plots-3.png" style="display: block; margin: auto;" />
 
-    #> Warning: Removed 9 rows containing missing values (geom_point).
+    #> Warning: Removed 11 rows containing missing values (geom_point).
 
 <img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/make_plots-4.png" style="display: block; margin: auto;" />
 
-    #> Warning: Removed 20 rows containing missing values (geom_point).
+    #> Warning: Removed 9 rows containing missing values (geom_point).
 
 <img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/make_plots-5.png" style="display: block; margin: auto;" />
 
@@ -853,6 +858,7 @@ ggplot(df_three2, aes(year, value)) +
 ```
 
 <img src="Surface_Analysis_Chlorophyll_Trends_files/figure-gfm/plot_adjusted_data-1.png" style="display: block; margin: auto;" />
+
 Since most zero values are older, the nominal zero values have a large
 influence on estimated slopes. The lower we set the replacement value we
 assign to include these observations in the regression, the more
@@ -898,7 +904,7 @@ summary(mod5)$p.table[2,]
 So, if we replace the zero values with `NA`, we see a significantly
 significant DECREASE in log(chlorophyll) over time. If we replace them
 with a a sufficiently small value (here 0.0001), the model suggests a
-statistically significant INCREASE in log(chlorophyll).
+statistically significant **increase** in log(chlorophyll).
 
 # Discussion
 

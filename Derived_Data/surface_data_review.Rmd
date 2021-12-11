@@ -21,7 +21,7 @@ knitr::opts_chunk$set(fig.align = 'center',
 
 # Introduction
 This Notebook reviews contents of the data received from FOCB's 
-"'Citizen Stewards"Surface" data.
+"Surface" data.
 
 This reflects only a small portion of FOCB's monitoring activity.  
 
@@ -58,7 +58,6 @@ sibling  <- file.path(parent,sibfldnm)
 
 dir.create(file.path(getwd(), 'figures'), showWarnings = FALSE)
 ```
-
 
 ## Primary Data
 We specify column names because FOCB data has a row of names, a row of units,
@@ -122,6 +121,7 @@ recent_data <- the_data %>%
 ## Create Trend Data
 First, we create a tibble containing information on years in which each
 station was sampled.
+
 ```{r}
 years_data <- the_data %>%
   group_by(station, year) %>%
@@ -136,6 +136,7 @@ years_data <- the_data %>%
 Then we identify stations with at least 10 years of data, and at least three
 years of data from the last five years, and use that list to select data for
 trend analysis.
+
 ```{r}
 selected_stations <- years_data %>%
   filter(years> 9, recent_years >2) %>%
@@ -169,6 +170,7 @@ tmp <- the_data %>%
 xtabs(~ year + parameter, data = tmp)
 rm(tmp)
 ```
+
 So note that Chlorophyll data is available going back to 2001, but from 
 relatively few samples until 2018
 
@@ -227,9 +229,8 @@ qqnorm(l, main = paste('log of', p))
 qqline(l)
 }
 par(oldpar)
-  
-  
 ```
+
 All parameters show deviations from normality.  
 
 *  Secchi depth is skewed right, with a long upper tail towards clear water. A 
@@ -263,7 +264,7 @@ least squares modeling is  chlorophyll A.
 ## Box Cox Transformations 
 The Box Cox transformation is based on looking at residuals from a linear model.
 in this setting, the "default" linear model includes time of year and
-monitoring Station
+monitoring Station.
 
 The box-cox transformations are of the form:
 $$\frac{Y ^{\lambda} - 1}{\lambda}$$
@@ -281,7 +282,6 @@ bc = boxcox(the_lm, lambda = seq(-0.5,2, 0.1), ylab = paste('loglik of', p))
 }
 
 rm(tmp)
-
 ```
 
 *  Secchi might be variance-stabilized somewhat by a square root transform.
@@ -291,11 +291,12 @@ rm(tmp)
 *  Chlorophyll A might be helped by a log transform.
 
 *   None of the other parameters appear likely to be much helped by response
-    transformations, at least not without getting fairly ad hoc.  While a 
+    transformations, at least not without getting fairly *ad hoc*.  While a 
     Box Cox transformation with Lambda == 1.25 may make statistical sense,
     for dissolved oxygen, it does not relate to any obvious physical 
-    interpretation.  The value here is largely to remind us that for heavy-tailed
-    distributions, power transformations can be variance stabilizing.
+    interpretation.  The value here is largely to remind us that for 
+    heavy-tailed distributions, power transformations can be variance 
+    stabilizing.
 
 From an aesthetic data analysis point of view, power transformations appear 
 unnecessary in the State of the Bay context, as we do not want to rely closely
@@ -332,4 +333,3 @@ East End Beach        |   EEB18
 Upper Harraseeket     |   HR4 
 Falmouth Town Landing |   PYC43  
 Upper Fore River      | 	STR54
-

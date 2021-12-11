@@ -35,7 +35,7 @@ Curtis C. Bohlen, Casco Bay Estuary Partnership
 # Introduction
 
 This Notebook reviews contents of the data received from FOCB’s
-“’Citizen Stewards”Surface" data.
+“Surface” data.
 
 This reflects only a small portion of FOCB’s monitoring activity.
 
@@ -56,11 +56,16 @@ concentrations in and around Portland harbor.
 ``` r
 library(MASS)     # Here for the `boxcox()` function
 library(tidyverse)
-#> -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
-#> v ggplot2 3.3.3     v purrr   0.3.4
-#> v tibble  3.0.5     v dplyr   1.0.3
-#> v tidyr   1.1.2     v stringr 1.4.0
-#> v readr   1.4.0     v forcats 0.5.0
+#> Warning: package 'tidyverse' was built under R version 4.0.5
+#> -- Attaching packages --------------------------------------- tidyverse 1.3.1 --
+#> v ggplot2 3.3.5     v purrr   0.3.4
+#> v tibble  3.1.6     v dplyr   1.0.7
+#> v tidyr   1.1.4     v stringr 1.4.0
+#> v readr   2.1.0     v forcats 0.5.1
+#> Warning: package 'ggplot2' was built under R version 4.0.5
+#> Warning: package 'tidyr' was built under R version 4.0.5
+#> Warning: package 'dplyr' was built under R version 4.0.5
+#> Warning: package 'forcats' was built under R version 4.0.5
 #> -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
@@ -68,6 +73,7 @@ library(tidyverse)
 library(readxl)
 
 library(GGally)
+#> Warning: package 'GGally' was built under R version 4.0.5
 #> Registered S3 method overwritten by 'GGally':
 #>   method from   
 #>   +.gg   ggplot2
@@ -143,9 +149,8 @@ the_data <- the_data %>%
          bottom_flag = secchi == "BSV") %>%
   relocate(secchi_2, .after = secchi) %>%
   relocate(bottom_flag, .after = secchi_2)
-#> Warning: Problem with `mutate()` input `secchi_2`.
-#> i NAs introduced by coercion
-#> i Input `secchi_2` is `if_else(secchi == "BSV", water_depth, as.numeric(secchi))`.
+#> Warning in replace_with(out, !condition, false, fmt_args(~false), glue("length
+#> of {fmt_args(~condition)}")): NAs introduced by coercion
 ```
 
 ## Create Recent Data
@@ -463,8 +468,6 @@ qqline(l)
 
 ``` r
 par(oldpar)
-  
-  
 ```
 
 All parameters show deviations from normality.
@@ -505,7 +508,7 @@ suitable for least squares modeling is chlorophyll A.
 
 The Box Cox transformation is based on looking at residuals from a
 linear model. in this setting, the “default” linear model includes time
-of year and monitoring Station
+of year and monitoring Station.
 
 The box-cox transformations are of the form:
 $$\\frac{Y ^{\\lambda} - 1}{\\lambda}$$
@@ -536,8 +539,8 @@ rm(tmp)
 -   Chlorophyll A might be helped by a log transform.
 
 -   None of the other parameters appear likely to be much helped by
-    response transformations, at least not without getting fairly ad
-    hoc. While a Box Cox transformation with Lambda == 1.25 may make
+    response transformations, at least not without getting fairly *ad
+    hoc*. While a Box Cox transformation with Lambda == 1.25 may make
     statistical sense, for dissolved oxygen, it does not relate to any
     obvious physical interpretation. The value here is largely to remind
     us that for heavy-tailed distributions, power transformations can be
